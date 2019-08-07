@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'question.dart';
 import 'victorine.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() => runApp(Quizzler());
 
@@ -30,21 +31,33 @@ class _QuizPageState extends State<QuizPage> {
   List<Icon> score = [];
   Victorine vV;
   int index = 0;
+  int vCorrectAnswersInRow = 0;
   Icon correct = Icon(Icons.check, color: Colors.green);
   Icon wrong = Icon(Icons.close, color: Colors.red);
   int ButtonId = 0;
 
   Icon CheckAnswer() {
     print('ButtonID: $ButtonId, index: $index');
-    return (ButtonId == 1 && vV.At(index % 3).vAnswer ||
-            ButtonId == 2 && ! vV.At(index % 3).vAnswer
-        ? correct
-        : wrong);
+    if (ButtonId == 1 && vV.Correct(index % 3) ||
+        ButtonId == 2 && !vV.Correct(index % 3)) {
+      ++vCorrectAnswersInRow;
+      if (vCorrectAnswersInRow != 0 && vCorrectAnswersInRow % 5 == 0) {
+        Alert(
+                context: context,
+                title: 'Congratulation!',
+                desc: 'You made $vCorrectAnswersInRow correct answers in row!')
+            .show();
+      }
+      return correct;
+    } else {
+      vCorrectAnswersInRow = 0;
+      return wrong;
+    }
   }
 
   List<Icon> getLast(int last) {
     List<Icon> res = [];
-    while (score.length-1 < last && last >= 0) {
+    while (score.length - 1 < last && last >= 0) {
       --last;
     }
     int ln = score.length;
@@ -55,8 +68,7 @@ class _QuizPageState extends State<QuizPage> {
     return res;
   }
 
-  void SetVictorine()
-  {
+  void SetVictorine() {
     vV = new Victorine();
     vV.Add(Question('First', true));
     vV.Add(Question('Second', false));
@@ -85,7 +97,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                vV.At(index % 3).vQuestion,
+                vV.Text(index % 3),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,

@@ -1,11 +1,8 @@
-class Question{
+class Question {
   String vQuestion;
   bool vAnswer;
 
-  Question(String q, bool a):
-      vQuestion = q,
-  vAnswer = a
-  {
-
-  }
+  Question(String q, bool a)
+      : vQuestion = q,
+        vAnswer = a;
 }
