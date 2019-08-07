@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'question.dart';
+import 'victorine.dart';
 
 void main() => runApp(Quizzler());
 
@@ -26,35 +28,39 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> score = [];
-  List<String> questions = [
-    'First',
-    'Second',
-    'Third',
-  ];
-  List<bool> answers = [true, false, false];
+  Victorine vV;
   int index = 0;
   Icon correct = Icon(Icons.check, color: Colors.green);
   Icon wrong = Icon(Icons.close, color: Colors.red);
   int ButtonId = 0;
+
   Icon CheckAnswer() {
     print('ButtonID: $ButtonId, index: $index');
-    return (ButtonId == 1 && answers[index % 3] ||
-            ButtonId == 2 && !answers[index % 3]
+    return (ButtonId == 1 && vV.At(index % 3).vAnswer ||
+            ButtonId == 2 && ! vV.At(index % 3).vAnswer
         ? correct
         : wrong);
   }
 
   List<Icon> getLast(int last) {
     List<Icon> res = [];
-    while (score.length < last && last >= 0) {
+    while (score.length-1 < last && last >= 0) {
       --last;
     }
     int ln = score.length;
     print('Score Size: $ln, Last: $last');
-    for (int i = last; i >= 0; --i) {
+    for (int i = last; i > 0; --i) {
       res.add(score[score.length - 1 - i]);
     }
     return res;
+  }
+
+  void SetVictorine()
+  {
+    vV = new Victorine();
+    vV.Add(Question('First', true));
+    vV.Add(Question('Second', false));
+    vV.Add(Question('Third', false));
   }
 
   void ButtonPressed(int id) {
@@ -67,6 +73,7 @@ class _QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    SetVictorine();
     List<Icon> scores = getLast(3);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,7 +85,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questions[index % 3],
+                vV.At(index % 3).vQuestion,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
